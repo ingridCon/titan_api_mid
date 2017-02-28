@@ -64,6 +64,8 @@ func (c *PreliquidacionController) Preliquidar() {
 		if( v.Preliquidacion.Nomina.TipoNomina.Nombre == "PE"){
 
 				var n *PreliquidacionpeController
+				fmt.Println("PERSONAS")
+				fmt.Println(v.PersonasPreLiquidacion)
 				resumen := n.Preliquidar(&v,reglasbase)
 
 				c.Data["json"] = resumen
