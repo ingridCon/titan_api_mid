@@ -284,9 +284,8 @@ func CargarReglasSustitutosPE(reglas string, sustituto models.Sustituto, cedulaP
 		reglas = reglas + "porcentaje(" + cedulaProveedor + "," + porcent + ")." + "\n"
 
 		//reglas = reglas + "residencia(" + cedulaProveedor + "," + lugar + ")." + "\n"
- 
-		m := NewMachine().Consult(reglas)
 
+		m := NewMachine().Consult(reglas)
 			pensionSust := m.ProveAll("pension_asignada_sust(" + cedulaProveedor +",P).")
 			for _, solution := range pensionSust {
 				Valor, _ := strconv.ParseFloat(fmt.Sprintf("%s", solution.ByName_("P")), 64)
@@ -304,13 +303,16 @@ func CargarReglasSustitutosPE(reglas string, sustituto models.Sustituto, cedulaP
 				temp.Conceptos = &lista_descuentos
 				resultado = append(resultado, temp)
 			}
-/*
-			valor := m.ProveAll("aporte_fondoSoli(" + cedulaProveedor +",W).")
-			for _, solution := range valor {
+
+			fondo := m.ProveAll("aporte_fondoSoli_sust(" + cedulaProveedor +",W).")
+			fmt.Println("Entra")
+			for _, solution := range fondo {
 				Valor, _ := strconv.ParseFloat(fmt.Sprintf("%s", solution.ByName_("W")), 64)
 				temp_conceptos := models.ConceptosResumen{Nombre: "fondoSolidaridad",
 					Valor: fmt.Sprintf("%.0f", Valor),
 				}
+				fmt.Println("fondosust")
+				fmt.Println(Valor)
 				codigo := m.ProveAll("codigo_concepto(" + temp_conceptos.Nombre + ",C).")
 				for _, cod := range codigo {
 					temp_conceptos.Id, _ = strconv.Atoi(fmt.Sprintf("%s", cod.ByName_("C")))
@@ -319,7 +321,7 @@ func CargarReglasSustitutosPE(reglas string, sustituto models.Sustituto, cedulaP
 				temp.Conceptos = &lista_descuentos
 				resultado = append(resultado, temp)
 			}
-*/
+
 			aporte_salud := m.ProveAll("aporte_salud_sust(" + cedulaProveedor +",S).")
 			for _, solution := range aporte_salud {
 				Valor, _ := strconv.ParseFloat(fmt.Sprintf("%s", solution.ByName_("S")), 64)

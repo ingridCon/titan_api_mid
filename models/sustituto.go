@@ -8,4 +8,5 @@ type Sustituto struct {
 	Porcentaje										int					`orm:"column(porcentaje)"`
 	Estado                          string        `orm:"column(estado);null"`
 	NumeroContrato								string						`orm:"column(numero_contrato);null"`
+	Tutor	 												int								`orm:"column(tutor)"`	
 }
