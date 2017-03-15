@@ -71,16 +71,15 @@ func CargarReglasPE(reglas string, pensionado models.InformacionPensionado, /*be
 			a, _ := strconv.Atoi(numero[len(numero)-1])
 			b, _ := strconv.Atoi(numero[len(numero)-2])
 			d, _ := strconv.Atoi(numero[len(numero)-3])
-			fmt.Println("a")
-			fmt.Println(a)
+
 			var val string
-			if  a < 5 || a > 5 || a == 5{				
+			if  a < 5 || a > 5 || a == 5{
 				numero[len(numero)-1] = "0"
 			}
 			if  b < 5 {
 				numero[len(numero)-2] = "0"
 			}else{
-				if  b > 5{
+				if  b > 5 || b == 5{
 					numero[len(numero)-2] = "0"
 					numero[len(numero)-3] = strconv.Itoa(d+1)
 				}
