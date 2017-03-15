@@ -71,8 +71,10 @@ func CargarReglasPE(reglas string, pensionado models.InformacionPensionado, /*be
 			a, _ := strconv.Atoi(numero[len(numero)-1])
 			b, _ := strconv.Atoi(numero[len(numero)-2])
 			d, _ := strconv.Atoi(numero[len(numero)-3])
+			fmt.Println("a")
+			fmt.Println(a)
 			var val string
-			if  a < 5 || a > 5{
+			if  a < 5 || a > 5 || a == 5{				
 				numero[len(numero)-1] = "0"
 			}
 			if  b < 5 {
@@ -352,7 +354,7 @@ for _, solution := range fondo {
 	for i := 0; i < len(numero); i++ {
 		val = val + numero[i]
 	}
-	Valor, _ = strconv.ParseFloat(val,64)	
+	Valor, _ = strconv.ParseFloat(val,64)
 	fmt.Println(Valor)
 	temp_conceptos := models.ConceptosResumen{Nombre: "fondoSolidaridad",
 		Valor: fmt.Sprintf("%.0f", Valor),
