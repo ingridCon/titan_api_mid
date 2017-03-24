@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func CargarReglasPE(reglas string, pensionado models.InformacionPensionado, /*beneficiarios string*/) (rest []models.Respuesta) {
+func CargarReglasPE(reglas string, pensionado models.InformacionPensionado,beneficiarioF int, beneficiarioE int) (rest []models.Respuesta) {
 
 	var resultado []models.Respuesta
 	temp := models.Respuesta{}
@@ -20,7 +20,8 @@ func CargarReglasPE(reglas string, pensionado models.InformacionPensionado, /*be
 	var lugarResidencia = pensionado.PensionadoEnExterior
 	var lugar string
 	var tpensionado = strconv.Itoa(pensionado.TipoPensionado)
-	//var pensionadoFallecido = pensionado.PersonaFallecido
+	var benF = strconv.Itoa(beneficiarioF)
+	var benE = strconv.Itoa(beneficiarioE)
 
 	if lugarResidencia == "S"{
 		lugar = "1"
@@ -30,22 +31,14 @@ func CargarReglasPE(reglas string, pensionado models.InformacionPensionado, /*be
 
 		reglas = reglas + "valor_mesada_pensionado(" + cedulaProveedor + "," + valorpension + ")." + "\n"
 		reglas = reglas + "tipo_pensionado(" + cedulaProveedor +","+ tpensionado +")." + "\n"
-		reglas = reglas + "categoria_beneficiario(" + cedulaProveedor +","+ "0" +")." + "\n"
-		reglas = reglas + "numHijos("+ "0" +")." + "\n"
 		reglas = reglas + "residencia(" + cedulaProveedor + "," + lugar + ")." + "\n"
-
-		/*if beneficiarios == " "{
-		reglas = reglas + "numero_beneficiarios(" + cedulaProveedor +","+ "0"+")." + "\n"
-		}else{
-		reglas = reglas + "numero_beneficiarios(" + cedulaProveedor +","+ beneficiarios +")." + "\n"
-		}*/
-
+		reglas = reglas + "numero_beneficiarios("+ cedulaProveedor +" , "+ benF +")." + "\n"
+		reglas = reglas + "numero_beneficiariosL("+ cedulaProveedor +" , "+ benE +")." + "\n"
 		reglas = reglas + "tipo_valor(" + "1" + ")." + "\n"
 		//reglas = reglas + "valor_incremento_vigencia(" + incremento + ","+ año +")." + "\n"
 
 		m := NewMachine().Consult(reglas)
-		//if pensionadoFallecido == "N"{
-		//fmt.Println("No fallecido")
+
 		pension := m.ProveAll("pension_asignada(" + cedulaProveedor +",P).")
 		for _, solution := range pension {
 			Valor, _ := strconv.ParseFloat(fmt.Sprintf("%s", solution.ByName_("P")), 64)
@@ -115,41 +108,74 @@ func CargarReglasPE(reglas string, pensionado models.InformacionPensionado, /*be
 			temp.Conceptos = &lista_descuentos
 			resultado = append(resultado, temp)
 		}
-		/*
-		pago_subfamiliar:= m.ProveAll("pago_subfamiliar(" + cedulaProveedor +",F).")
-		for _, solution := range pago_subfamiliar {
-		Valor, _ := strconv.ParseFloat(fmt.Sprintf("%s", solution.ByName_("F")), 64)
-		temp_conceptos := models.ConceptosResumen{Nombre: "subsidioFamiliar",
-		Valor: fmt.Sprintf("%.0f", Valor),
+		fmt.Println("tipo pensionado")
+		fmt.Println(tpensionado)
+		if beneficiarioF != 0  && tpensionado == "1"{
+
+			fmt.Println("SSSSSuuuuuuuuuub")
+			fmt.Println(benF)
+			subfamiliar:= m.ProveAll("subsidio_familiar(" + cedulaProveedor +",F).")
+			for _, solution := range subfamiliar {
+			Valor, _ := strconv.ParseFloat(fmt.Sprintf("%s", solution.ByName_("F")), 64)
+			temp_conceptos := models.ConceptosResumen{Nombre: "subFamiliar",
+			Valor: fmt.Sprintf("%.0f", Valor),
+		}
+		fmt.Println("pago_subfamiliar")
+		fmt.Println(Valor)
+		codigo := m.ProveAll("codigo_concepto(" + temp_conceptos.Nombre + ",C).")
+		for _, cod := range codigo {
+		temp_conceptos.Id, _ = strconv.Atoi(fmt.Sprintf("%s", cod.ByName_("C")))
 	}
-	fmt.Println("pago_subfamiliar")
-	fmt.Println(Valor)
-	codigo := m.ProveAll("codigo_concepto(" + temp_conceptos.Nombre + ",C).")
-	for _, cod := range codigo {
-	temp_conceptos.Id, _ = strconv.Atoi(fmt.Sprintf("%s", cod.ByName_("C")))
-}
-lista_descuentos = append(lista_descuentos, temp_conceptos)
-temp.Conceptos = &lista_descuentos
-resultado = append(resultado, temp)
-}
+	lista_descuentos = append(lista_descuentos, temp_conceptos)
+	temp.Conceptos = &lista_descuentos
+	resultado = append(resultado, temp)
+	}
 
-pago_subsidio_libros := m.ProveAll("pago_subsidio_libros(" + cedulaProveedor +",F).")
-for _, solution := range pago_subsidio_libros {
-Valor, _ := strconv.ParseFloat(fmt.Sprintf("%s", solution.ByName_("F")), 64)
-temp_conceptos := models.ConceptosResumen{Nombre: "subsidioLibros",
-Valor: fmt.Sprintf("%.0f", Valor),
-}
-fmt.Println("pago_subsidio_libros")
-fmt.Println(Valor)
+		}
 
-codigo := m.ProveAll("codigo_concepto(" + temp_conceptos.Nombre + ",C).")
-for _, cod := range codigo {
-temp_conceptos.Id, _ = strconv.Atoi(fmt.Sprintf("%s", cod.ByName_("C")))
-}
-lista_descuentos = append(lista_descuentos, temp_conceptos)
-temp.Conceptos = &lista_descuentos
-resultado = append(resultado, temp)
-}*/
+		if beneficiarioF != 0  && tpensionado == "3"{
+
+			fmt.Println("SSSSSuuuuuuuuuub3")
+			fmt.Println(benF)
+			subfamiliar:= m.ProveAll("subsidio_familiar_to(" + cedulaProveedor +",F).")
+			for _, solution := range subfamiliar {
+			Valor, _ := strconv.ParseFloat(fmt.Sprintf("%s", solution.ByName_("F")), 64)
+			temp_conceptos := models.ConceptosResumen{Nombre: "subFamiliar",
+			Valor: fmt.Sprintf("%.0f", Valor),
+		}
+		fmt.Println("pago_subfamiliar3")
+		fmt.Println(Valor)
+		codigo := m.ProveAll("codigo_concepto(" + temp_conceptos.Nombre + ",C).")
+		for _, cod := range codigo {
+		temp_conceptos.Id, _ = strconv.Atoi(fmt.Sprintf("%s", cod.ByName_("C")))
+	}
+	lista_descuentos = append(lista_descuentos, temp_conceptos)
+	temp.Conceptos = &lista_descuentos
+	resultado = append(resultado, temp)
+	}
+
+		}
+
+	if beneficiarioE != 0 && (tpensionado == "1"||tpensionado == "3" ) {
+		pago_subsidio_libros := m.ProveAll("pago_subsidio_libros(" + cedulaProveedor +",F).")
+		for _, solution := range pago_subsidio_libros {
+		Valor, _ := strconv.ParseFloat(fmt.Sprintf("%s", solution.ByName_("F")), 64)
+		temp_conceptos := models.ConceptosResumen{Nombre: "subLibros",
+		Valor: fmt.Sprintf("%.0f", Valor),
+		}
+		fmt.Println("pago_subsidio_libros")
+		fmt.Println(Valor)
+
+		codigo := m.ProveAll("codigo_concepto(" + temp_conceptos.Nombre + ",C).")
+		for _, cod := range codigo {
+		temp_conceptos.Id, _ = strconv.Atoi(fmt.Sprintf("%s", cod.ByName_("C")))
+		}
+		lista_descuentos = append(lista_descuentos, temp_conceptos)
+		temp.Conceptos = &lista_descuentos
+		resultado = append(resultado, temp)
+		}
+
+	}
 
 //idProveedorString := strconv.Itoa(idProveedor)
 novedades := m.ProveAll("info_concepto(" + cedulaProveedor + ","+ pen +",T,2017,N,R).")
@@ -167,118 +193,6 @@ for _, solution := range novedades {
 	temp.Conceptos = &lista_descuentos
 	resultado = append(resultado, temp)
 }
-/*}else{
-if persona = "S"{
-pension := m.ProveAll("pension_asignada(" + cedulaProveedor +",P).")
-for _, solution := range pension {
-Valor, _ := strconv.ParseFloat(fmt.Sprintf("%s", solution.ByName_("P")), 64)
-pen = strconv.FormatFloat(Valor, 'f', 6, 64)
-temp_conceptos := models.ConceptosResumen{Nombre: "pensionadoPension",
-Valor: fmt.Sprintf("%.0f", Valor),
-}
-fmt.Println("pensionadoPension")
-fmt.Println(Valor)
-codigo := m.ProveAll("codigo_concepto(" + temp_conceptos.Nombre + ",C).")
-for _, cod := range codigo {
-temp_conceptos.Id, _ = strconv.Atoi(fmt.Sprintf("%s", cod.ByName_("C")))
-}
-lista_descuentos = append(lista_descuentos, temp_conceptos)
-temp.Conceptos = &lista_descuentos
-resultado = append(resultado, temp)
-}
-
-valor := m.ProveAll("aporte_fondoSoli(" + cedulaProveedor +",W).")
-for _, solution := range valor {
-Valor, _ := strconv.ParseFloat(fmt.Sprintf("%s", solution.ByName_("W")), 64)
-temp_conceptos := models.ConceptosResumen{Nombre: "fondoSolidaridad",
-Valor: fmt.Sprintf("%.0f", Valor),
-}
-fmt.Println("fondoSolidaridad")
-fmt.Println(Valor)
-codigo := m.ProveAll("codigo_concepto(" + temp_conceptos.Nombre + ",C).")
-for _, cod := range codigo {
-temp_conceptos.Id, _ = strconv.Atoi(fmt.Sprintf("%s", cod.ByName_("C")))
-}
-lista_descuentos = append(lista_descuentos, temp_conceptos)
-temp.Conceptos = &lista_descuentos
-resultado = append(resultado, temp)
-}
-
-aporte_salud := m.ProveAll("aporte_salud(" + cedulaProveedor +",S).")
-for _, solution := range aporte_salud {
-Valor, _ := strconv.ParseFloat(fmt.Sprintf("%s", solution.ByName_("S")), 64)
-fmt.Println("salud")
-fmt.Println(Valor)
-temp_conceptos := models.ConceptosResumen{Nombre: "salud",
-Valor: fmt.Sprintf("%.0f", Valor),
-}
-codigo := m.ProveAll("codigo_concepto(" + temp_conceptos.Nombre + ",C).")
-for _, cod := range codigo {
-temp_conceptos.Id, _ = strconv.Atoi(fmt.Sprintf("%s", cod.ByName_("C")))
-}
-lista_descuentos = append(lista_descuentos, temp_conceptos)
-temp.Conceptos = &lista_descuentos
-resultado = append(resultado, temp)
-}
-}
-}*/
-/*
-}else{
-if pensionadoFallecido == "S"{
-fmt.Println("Persona Fallecida SI")
-pension := m.ProveAll("pension_asignada(" + cedulaProveedor +",P).")
-for _, solution := range pension {
-Valor, _ := strconv.ParseFloat(fmt.Sprintf("%s", solution.ByName_("P")), 64)
-pen = strconv.FormatFloat(Valor, 'f', 6, 64)
-temp_conceptos := models.ConceptosResumen{Nombre: "pensionadoPension",
-Valor: fmt.Sprintf("%.0f", Valor),
-}
-fmt.Println("pensionadoPension")
-fmt.Println(Valor)
-codigo := m.ProveAll("codigo_concepto(" + temp_conceptos.Nombre + ",C).")
-for _, cod := range codigo {
-temp_conceptos.Id, _ = strconv.Atoi(fmt.Sprintf("%s", cod.ByName_("C")))
-}
-lista_descuentos = append(lista_descuentos, temp_conceptos)
-temp.Conceptos = &lista_descuentos
-resultado = append(resultado, temp)
-}
-
-valor := m.ProveAll("aporte_fondoSoli(" + cedulaProveedor +",W).")
-for _, solution := range valor {
-Valor, _ := strconv.ParseFloat(fmt.Sprintf("%s", solution.ByName_("W")), 64)
-temp_conceptos := models.ConceptosResumen{Nombre: "fondoSolidaridad",
-Valor: fmt.Sprintf("%.0f", Valor),
-}
-fmt.Println("fondoSolidaridad")
-fmt.Println(Valor)
-codigo := m.ProveAll("codigo_concepto(" + temp_conceptos.Nombre + ",C).")
-for _, cod := range codigo {
-temp_conceptos.Id, _ = strconv.Atoi(fmt.Sprintf("%s", cod.ByName_("C")))
-}
-lista_descuentos = append(lista_descuentos, temp_conceptos)
-temp.Conceptos = &lista_descuentos
-resultado = append(resultado, temp)
-}
-
-aporte_salud := m.ProveAll("aporte_salud(" + cedulaProveedor +",S).")
-for _, solution := range aporte_salud {
-Valor, _ := strconv.ParseFloat(fmt.Sprintf("%s", solution.ByName_("S")), 64)
-fmt.Println("salud")
-fmt.Println(Valor)
-temp_conceptos := models.ConceptosResumen{Nombre: "salud",
-Valor: fmt.Sprintf("%.0f", Valor),
-}
-codigo := m.ProveAll("codigo_concepto(" + temp_conceptos.Nombre + ",C).")
-for _, cod := range codigo {
-temp_conceptos.Id, _ = strconv.Atoi(fmt.Sprintf("%s", cod.ByName_("C")))
-}
-lista_descuentos = append(lista_descuentos, temp_conceptos)
-temp.Conceptos = &lista_descuentos
-resultado = append(resultado, temp)
-}
-}
-}*/
 
 return resultado
 }
