@@ -134,7 +134,6 @@ func CargarReglasPE(reglas string, pensionado models.InformacionPensionado,benef
 		}
 
 		if beneficiarioF != 0  && tpensionado == "3"{
-
 			fmt.Println("SSSSSuuuuuuuuuub3")
 			fmt.Println(benF)
 			subfamiliar:= m.ProveAll("subsidio_familiar_to(" + cedulaProveedor +",F).")

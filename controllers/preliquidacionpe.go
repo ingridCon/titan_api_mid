@@ -69,11 +69,11 @@ func (c *PreliquidacionpeController) Preliquidar(datos *models.DatosPreliquidaci
 							for i := 0; i < len(beneficiarios); i++ {
 
 								if beneficiarios[i].CategoriaBeneficiario == 1 || beneficiarios[i].CategoriaBeneficiario == 2 || beneficiarios[i].CategoriaBeneficiario == 3{
-									if beneficiarios[i].SubFamiliar == "S"{
+									if beneficiarios[i].SubFamiliar == "S" && beneficiarios[i].Estado == "A"{
 										beneficiarioF = beneficiarioF + 1
 									}
 								}
-								if beneficiarios[i].SubEstudios  == "S" && beneficiarios[i].CategoriaBeneficiario == 3{
+								if beneficiarios[i].SubEstudios  == "S" && beneficiarios[i].CategoriaBeneficiario == 3 && beneficiarios[i].Estado == "A"{
 									beneficiarioE = beneficiarioE + 1
 									}
 								}

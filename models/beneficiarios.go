@@ -14,4 +14,5 @@ type Beneficiarios struct {
 	SubFamiliar           string                 `orm:"column(sub_familiar);null"`
 	CategoriaBeneficiario int `orm:"column(categoria_beneficiario);"`
 	SubEstudios           string                 `orm:"column(aux_estudio);null"`
+	Estado								string									`orm:"column(estado);null"`
 }
